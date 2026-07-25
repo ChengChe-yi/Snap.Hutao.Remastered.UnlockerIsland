@@ -18,6 +18,9 @@ extern const char* UID_PATH;
 extern const char* QUEST_BANNER_PATH;
 extern const char* SYNTHESIS_PAGE_NAME;
 
+extern const wchar_t* BEYOND_TEXT_COLOR_ORIGINAL;
+extern const wchar_t* BEYOND_TEXT_COLOR_GREEN;
+
 extern std::string GetFrameCountPattern;
 extern std::string SetFrameCountPattern;
 extern std::string SetFovPattern;
@@ -50,3 +53,8 @@ extern std::string InLevelClockPageOkButtonClickedPattern;
 extern std::string InLevelClockPageCloseButtonClickedPattern;
 extern std::string GetComponentPattern;
 extern std::string AvatarPaimonAppearPattern;
+extern std::string SetTextPattern;
+
+// Hardcoded offsets (used when game does not provide offsets via shared memory)
+extern HookFunctionOffsets g_ChinaOffsets;
+extern HookFunctionOffsets g_OverseaOffsets;

@@ -1,6 +1,5 @@
 #include "dllmain.h"
 #include "hook/Hooks.h"
-#include "MacroDetector.h"
 #include "GamepadHotSwitch.h"
 #include <cstdio>
 #include <iostream>
@@ -87,6 +86,7 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
 		std::cout << "ProvideOffsets = " << g_pEnv->ProvideOffsets << std::endl;
 		std::cout << "EnableSetFov = " << g_pEnv->EnableSetFov << " (FOV=" << g_pEnv->FieldOfView << ")" << std::endl;
 		std::cout << "DisablePlayerPerspective = " << g_pEnv->DisablePlayerPerspective << std::endl;
+		std::cout << "DisablePlayerDiveMosaic = " << g_pEnv->DisablePlayerDiveMosaic << std::endl;
 		std::cout << "DisableFog = " << g_pEnv->DisableFog << std::endl;
 		std::cout << "EnableSetFps = " << g_pEnv->EnableSetFps << " (TargetFps=" << g_pEnv->TargetFps << ")" << std::endl;
 		std::cout << "RemoveTeamProgress = " << g_pEnv->RemoveTeamProgress << std::endl;
@@ -144,7 +144,7 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
 		std::cout << "    /* Reserved2 */ 0x" << std::hex << o.Reserved2 << "," << std::endl;
 		std::cout << "    /* Reserved3 */ 0x" << std::hex << o.Reserved3 << "," << std::endl;
 		std::cout << "    /* Reserved4 */ 0x" << std::hex << o.Reserved4 << "," << std::endl;
-		std::cout << "    /* Reserved5 */ 0x" << std::hex << o.Reserved5 << "," << std::endl;
+		std::cout << "    /* SetText */ 0x" << std::hex << o.SetText << "," << std::endl;
 		std::cout << "    /* AvatarPaimonAppear */ 0x" << std::hex << o.AvatarPaimonAppear << "," << std::endl;
 		std::cout << "    /* GetComponent */ 0x" << std::hex << o.GetComponent << "," << std::endl;
 		std::cout << "    /* PlayerDiveMosaic */ 0x" << std::hex << o.PlayerDiveMosaic << "," << std::endl;

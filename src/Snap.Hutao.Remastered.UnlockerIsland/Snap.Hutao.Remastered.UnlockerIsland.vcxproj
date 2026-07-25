@@ -163,6 +163,7 @@
     <ClInclude Include="function\HooksShared.h" />
     <ClInclude Include="function\FovOverride.h" />
     <ClInclude Include="function\DisablePlayerPerspective.h" />
+    <ClInclude Include="function\DisablePlayerDiveMosaic.h" />
     <ClInclude Include="function\DisableFog.h" />
     <ClInclude Include="function\EnableSetFps.h" />
     <ClInclude Include="function\RemoveTeamProgress.h" />
@@ -185,7 +186,7 @@
     <ClInclude Include="hook\HookWndProc.h" />
     <ClInclude Include="IslandState.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="MacroDetector.h" />
+
     <ClInclude Include="utils\Patch.h" />
     <ClInclude Include="utils\Scanner.h" />
     <ClInclude Include="utils\UnityUtils.h" />
@@ -202,7 +203,7 @@
     <ClCompile Include="hook\Hooks.cpp" />
     <ClCompile Include="hook\HookWndProc.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="MacroDetector.cpp" />
+
     <ClCompile Include="utils\MemoryUtils.cpp" />
     <ClCompile Include="utils\Patch.cpp" />
     <ClCompile Include="utils\Scanner.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="utils\UnityUtils.cpp" />
     <ClCompile Include="function\FovOverride.cpp" />
     <ClCompile Include="function\DisablePlayerPerspective.cpp" />
+    <ClCompile Include="function\DisablePlayerDiveMosaic.cpp" />
     <ClCompile Include="function\DisableFog.cpp" />
     <ClCompile Include="function\EnableSetFps.cpp" />
     <ClCompile Include="function\RemoveTeamProgress.cpp" />

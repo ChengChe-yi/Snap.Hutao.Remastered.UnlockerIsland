@@ -39,12 +39,12 @@ struct HookFunctionOffsets
 	DWORD Reserved2;
 	DWORD Reserved3;
 	DWORD Reserved4;
-	DWORD Reserved5;
-	DWORD PlayerDiveMosaic;
+	DWORD SetText;                             // UnityEngine.UI.Text.set_text
 	DWORD AvatarPaimonAppear;                  // GlobalActor.AvatarPaimonAppear
 
 	DWORD GetComponent;                        // GameObject.GetComponent(String type)
-	DWORD Reserved6;                             // Text.get_text
+
+	DWORD PlayerDiveMosaic;
 
 	DWORD GetName;                             // Object.get_name
 

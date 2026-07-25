@@ -4,6 +4,7 @@
 #include "../function/HooksShared.h"
 #include "../function/FovOverride.h"
 #include "../function/DisablePlayerPerspective.h"
+#include "../function/DisablePlayerDiveMosaic.h"
 #include "../function/DisableFog.h"
 #include "../function/EnableSetFps.h"
 #include "../function/RemoveTeamProgress.h"
@@ -20,11 +21,11 @@
 #include "../function/CombineHotkey.h"
 #include "../function/WeakMapCheck.h"
 
-#include "../MacroDetector.h"
 #include "../Cache.h"
 #include "../utils/Task.h"
 #include "../utils/Scanner.h"
 #include "../Logger.h"
+#include "../hook/HookWndProc.h"
 
 #include <vector>
 #include <Windows.h>
@@ -42,6 +43,7 @@ LPVOID setActive = nullptr;
 LPVOID getActive = nullptr;
 LPVOID getComponent = nullptr;
 LPVOID getName = nullptr;
+LPVOID setText = nullptr;
 
 // Input switching
 LPVOID switchInputDeviceToTouchScreen = nullptr;
@@ -98,7 +100,6 @@ LPVOID fnDisplayFog = nullptr;
 // Function registry & dispatch
 // ===================================================================
 static std::vector<IFunction*> g_functions;
-static bool macroDetectorInitialized = false;
 
 typedef int (*SetFovFn)(void*, float);
 typedef void (*UpdateFn)(void*);
@@ -108,18 +109,7 @@ static void DispatchUpdate()
 {
 	bool isResisted = CheckResistInBeyd();
 
-	if (isResisted && !isResistedLastFrame)
-	{
-		MacroDetector::GetInstance().ShowLimitedMessage();
-	}
-
 	isResistedLastFrame = isResisted;
-
-	if (!macroDetectorInitialized)
-	{
-		MacroDetector::GetInstance().Initialize();
-		macroDetectorInitialized = true;
-	}
 
 	// Throttled (2000ms) operations — refresh resist (千星奇域) state
 	static ULONGLONG lastExecutionTime = 0;
@@ -290,12 +280,12 @@ static void HookGameUpdate(void* pThis)
 {
 	bool isResisted = CheckResistInBeyd();
 
-	if (isResisted && !isResistedLastFrame)
-	{
-		MacroDetector::GetInstance().ShowLimitedMessage();
-	}
-
 	isResistedLastFrame = isResisted;
+
+	if (!GetUnityMainWindow())
+	{
+		InitializeWndProcHooks();
+	}
 
 	Task::Tick();
 
@@ -346,6 +336,7 @@ void SetupHooks()
 	// Order does not matter; each reads from g_pEnv->Offsets in Initialize()
 	g_functions.push_back(new FovOverride());
 	g_functions.push_back(new DisablePlayerPerspective());
+	g_functions.push_back(new DisablePlayerDiveMosaic());
 	g_functions.push_back(new DisableFog());
 	g_functions.push_back(new EnableSetFps());
 	g_functions.push_back(new RemoveTeamProgress());
@@ -372,6 +363,11 @@ void SetupHooks()
 	if (offsets->GetComponent)
 	{
 		getComponent = GetFunctionAddress(offsets->GetComponent);
+	}
+
+	if (offsets->SetText)
+	{
+		setText = GetFunctionAddress(offsets->SetText);
 	}
 
 	// Set up the master SetFov dispatch hook

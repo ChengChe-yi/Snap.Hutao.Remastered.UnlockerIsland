@@ -17,6 +17,7 @@ extern LPVOID setActive;        // SetActiveFn (also hooked by HideGrass)
 extern LPVOID getActive;        // GetActiveFn
 extern LPVOID getComponent;     // GetComponentFn (used by Cache)
 extern LPVOID getName;          // GetNameFn (used by HideGrass)
+extern LPVOID setText;          // SetTextFn (used by Cache for color replacement)
 
 // --- Input device switching (used by TouchMode, GamepadHotSwitch) ---
 extern LPVOID switchInputDeviceToTouchScreen;

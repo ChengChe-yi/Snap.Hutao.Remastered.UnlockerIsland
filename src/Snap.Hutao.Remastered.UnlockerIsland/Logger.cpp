@@ -35,5 +35,10 @@ void Log(Il2CppString* msg)
 	{
 		return;
 	}
-	std::wcout << (const wchar_t*)&msg->chars << std::endl;
+
+	const wchar_t* wstr = (const wchar_t*)&msg->chars;
+	int len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
+	std::string str(len - 1, '\0');
+	WideCharToMultiByte(CP_ACP, 0, wstr, -1, &str[0], len, nullptr, nullptr);
+	std::cout << str << std::endl;
 }

@@ -8,6 +8,7 @@ bool g_cachedIsResisted = false;
 
 typedef Il2CppString* (*FindStringFn)(const char*);
 typedef void* (*GetComponentFn)(void*, Il2CppString*);
+typedef void (*SetTextFn)(void*, Il2CppString*);
 
 Il2CppString* GetText(void* pText)
 {
@@ -20,6 +21,7 @@ bool CacheResistState()
     {
         FindStringFn findStringFunc = (FindStringFn)findString;
         GetComponentFn getComponentFunc = (GetComponentFn)getComponent;
+		SetTextFn setTextFunc = (SetTextFn)setText;
 
         void* uidObj = FindGameObject(UID_PATH);
         if (!uidObj)
@@ -40,9 +42,12 @@ bool CacheResistState()
             {
                 Log("Text component was found for resist check");
                 Il2CppString* textContent = GetText(textComp);
+                Log(textContent);
+
                 if (textContent)
                 {
-                    bool isResisted = wcsstr(textContent->chars, L"GUID") != nullptr;
+                    bool hasGuid = wcsstr(textContent->chars, L"GUID") != nullptr;
+                    bool isResisted = hasGuid;
                     if (isResisted)
                     {
 						for (auto& whiteListItem : BeyondWhiteList)
@@ -54,6 +59,32 @@ bool CacheResistState()
 								break;
 							}
 						}
+                    }
+
+                    // If in whitelisted Beyond realm, replace #FFFFFF99 with green
+                    if (hasGuid && !isResisted && setText && findString)
+                    {
+                        wchar_t* p = wcsstr(textContent->chars, BEYOND_TEXT_COLOR_ORIGINAL);
+                        if (p)
+                        {
+                            std::wstring newText(textContent->chars);
+                            size_t colorLen = wcslen(BEYOND_TEXT_COLOR_ORIGINAL);
+                            for (size_t pos = newText.find(BEYOND_TEXT_COLOR_ORIGINAL); pos != std::wstring::npos; pos = newText.find(BEYOND_TEXT_COLOR_ORIGINAL, pos))
+                            {
+                                newText.replace(pos, colorLen, BEYOND_TEXT_COLOR_GREEN);
+                                pos += colorLen;
+                            }
+
+                            int len = WideCharToMultiByte(CP_UTF8, 0, newText.c_str(), -1, nullptr, 0, nullptr, nullptr);
+                            std::string utf8(len - 1, '\0');
+                            WideCharToMultiByte(CP_UTF8, 0, newText.c_str(), -1, &utf8[0], len, nullptr, nullptr);
+
+                            Il2CppString* newStr = ((FindStringFn)findString)(utf8.c_str());
+                            if (newStr)
+                            {
+                                setTextFunc(textComp, newStr);
+                            }
+                        }
                     }
 
                     g_cachedIsResisted = isResisted;

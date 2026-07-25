@@ -38,6 +38,7 @@ struct HookEnvironment
     BOOL  InLevelClockPageSpeedUp;
     DWORD CombineHotkey;
     BOOL  WeakMapCheck;
+    BOOL  DisablePlayerDiveMosaic;
 
     HookFunctionOffsets Offsets;
 };

@@ -54,9 +54,7 @@
     <ClInclude Include="IslandState.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MacroDetector.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+
     <ClInclude Include="Cache.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -94,6 +92,9 @@
       <Filter>头文件\function</Filter>
     </ClInclude>
     <ClInclude Include="function\DisablePlayerPerspective.h">
+      <Filter>头文件\function</Filter>
+    </ClInclude>
+    <ClInclude Include="function\DisablePlayerDiveMosaic.h">
       <Filter>头文件\function</Filter>
     </ClInclude>
     <ClInclude Include="function\DisableFog.h">
@@ -158,9 +159,7 @@
     <ClCompile Include="framework.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MacroDetector.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+
     <ClCompile Include="Cache.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -192,6 +191,9 @@
       <Filter>源文件\function</Filter>
     </ClCompile>
     <ClCompile Include="function\DisablePlayerPerspective.cpp">
+      <Filter>源文件\function</Filter>
+    </ClCompile>
+    <ClCompile Include="function\DisablePlayerDiveMosaic.cpp">
       <Filter>源文件\function</Filter>
     </ClCompile>
     <ClCompile Include="function\DisableFog.cpp">

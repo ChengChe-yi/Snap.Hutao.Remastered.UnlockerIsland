@@ -15,9 +15,10 @@ std::list<std::wstring> GrassPrefix
 
 std::list<std::wstring> BeyondWhiteList
 {
-    L"45694132064",
-    L"24339714898",
-    L"41376171429",
+	L"45694132064",
+	L"24339714898",
+	L"41376171429",
+	L"15605228819", // 剑斗木桩
 };
 
 const char* PAIMON_PATH = "/EntityRoot/OtherGadgetRoot/NPC_Guide_Paimon(Clone)";
@@ -31,6 +32,9 @@ const char* FRIEND_PAGE_PATH = "/Canvas/Pages/FriendPage";
 const char* UID_PATH = "/BetaWatermarkCanvas(Clone)/Panel/TxtUID";
 const char* QUEST_BANNER_PATH = "/Canvas/Pages/InLevelMapPage/GrpMap/GrpPointTips/Layout/QuestBanner";
 const char* SYNTHESIS_PAGE_NAME = "SynthesisPage";
+
+const wchar_t* BEYOND_TEXT_COLOR_ORIGINAL = L"#FFFFFF99";
+const wchar_t* BEYOND_TEXT_COLOR_GREEN = L"#00FF00FF";
 
 //REL
 std::string GetFrameCountPattern = "E8 ? ? ? ? 85 C0 7E 0E E8 ? ? ? ? 0F 57 C0 F3 0F 2A C0 EB 08";
@@ -78,3 +82,5 @@ std::string InLevelClockPageCloseButtonClickedPattern = "56 57 53 48 83 EC ?? 48
 std::string ClosePageCallerPattern = "48 83 EC 48 48 89 C8 80 3D ?? ?? ?? ?? 00 75 ?? 83 7A 04 26 75 ?? 80 B8 ?? ?? 00 00 00 74 ?? 4C 8B 00 48 89 C1 31 D2 41 FF 90 ?? ?? 00 00";
 std::string GetComponentPattern = "40 53 48 83 EC 50 48 8B D9 48 89 54 24 60 48 8D 54 24 20 48 8D 4C 24 60 E8 ?? ?? ?? ?? 48 85 DB 74 ?? 48 8B CB E8 ?? ?? ?? ?? 48 85 C0 74 ?? 4C 8D 44 24 20 48 8B D0 48 8D 4C 24 68 E8";
 std::string AvatarPaimonAppearPattern = "41 56 56 57 53 48 83 EC 28 44 89 C3 48 89 D6 49 89 CE 80 3D ?? ?? ?? ?? 00 0F 84 ?? ?? ?? ?? 80 3D ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 80 B9 C7 00 00 00 00 0F 84 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??";
+
+std::string SetTextPattern = "56 57 48 83 EC 28 48 89 CE 48 85 D2 0F 84 ?? ?? ?? ?? 48 89 D7 8B 42 10 48 8B 8E E0 00 00 00 85 C0 0F 84";
