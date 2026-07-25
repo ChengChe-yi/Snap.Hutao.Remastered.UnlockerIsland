@@ -205,6 +205,7 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
 	ScanDirect(GetComponentPattern,                     offsets.GetComponent);
 	ScanDirect(AvatarPaimonAppearPattern,               offsets.AvatarPaimonAppear);
 	ScanDirect(PlayerPerspectivePattern,                offsets.PlayerPerspective);
+	ScanDirect(SetTextPattern,                          offsets.SetText);
 	offsets.PlayerDiveMosaic = ScanPlayerDiveMosaic();
 
     // ---- REL (relative-call) patterns ----
