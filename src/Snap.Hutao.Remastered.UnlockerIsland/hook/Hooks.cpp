@@ -41,6 +41,7 @@ LPVOID setActive = nullptr;
 LPVOID getActive = nullptr;
 LPVOID getComponent = nullptr;
 LPVOID getName = nullptr;
+LPVOID setText = nullptr;
 
 // Input switching
 LPVOID switchInputDeviceToTouchScreen = nullptr;
@@ -251,6 +252,11 @@ void SetupHooks()
 	if (offsets->GetComponent)
 	{
 		getComponent = GetFunctionAddress(offsets->GetComponent);
+	}
+
+	if (offsets->SetText)
+	{
+		setText = GetFunctionAddress(offsets->SetText);
 	}
 
 	// Set up the master SetFov dispatch hook

@@ -33,6 +33,9 @@ const char* UID_PATH = "/BetaWatermarkCanvas(Clone)/Panel/TxtUID";
 const char* QUEST_BANNER_PATH = "/Canvas/Pages/InLevelMapPage/GrpMap/GrpPointTips/Layout/QuestBanner";
 const char* SYNTHESIS_PAGE_NAME = "SynthesisPage";
 
+const wchar_t* BEYOND_TEXT_COLOR_ORIGINAL = L"#FFFFFF99";
+const wchar_t* BEYOND_TEXT_COLOR_GREEN = L"#00FF00FF";
+
 //REL
 std::string GetFrameCountPattern = "E8 ? ? ? ? 85 C0 7E 0E E8 ? ? ? ? 0F 57 C0 F3 0F 2A C0 EB 08";
 //REL
@@ -80,6 +83,7 @@ std::string ClosePageCallerPattern = "48 83 EC 48 48 89 C8 80 3D ?? ?? ?? ?? 00 
 std::string GetComponentPattern = "40 53 48 83 EC 50 48 8B D9 48 89 54 24 60 48 8D 54 24 20 48 8D 4C 24 60 E8 ?? ?? ?? ?? 48 85 DB 74 ?? 48 8B CB E8 ?? ?? ?? ?? 48 85 C0 74 ?? 4C 8D 44 24 20 48 8B D0 48 8D 4C 24 68 E8";
 std::string AvatarPaimonAppearPattern = "41 56 56 57 53 48 83 EC 28 44 89 C3 48 89 D6 49 89 CE 80 3D ?? ?? ?? ?? 00 0F 84 ?? ?? ?? ?? 80 3D ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 80 B9 C7 00 00 00 00 0F 84 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??";
 
+std::string SetTextPattern = "56 57 48 83 EC 28 48 89 CE 48 85 D2 0F 84 ?? ?? ?? ?? 48 89 D7 8B 42 10 48 8B 8E E0 00 00 00 85 C0 0F 84";
 // ===================================================================
 // Hardcoded offset tables (used when ProvideOffsets is FALSE)
 // ===================================================================
@@ -112,7 +116,7 @@ HookFunctionOffsets g_ChinaOffsets = {
 	/* Reserved2 */ 0x0,
 	/* Reserved3 */ 0x0,
 	/* Reserved4 */ 0x0,
-	/* Reserved5 */ 0x0,
+	/* SetText */ 0x17DF0700,
 	/* AvatarPaimonAppear */ 0x1232d260,
 	/* GetComponent */ 0x1131500,
 	/* PlayerDiveMosaic */ 0x1167367f,
@@ -152,7 +156,7 @@ HookFunctionOffsets g_OverseaOffsets = {
 	/* Reserved2 */ 0x0,
 	/* Reserved3 */ 0x0,
 	/* Reserved4 */ 0x0,
-	/* Reserved5 */ 0x0,
+	/* SetText */ 0x17E3EAF0,
 	/* AvatarPaimonAppear */ 0x123314b0,
 	/* GetComponent */ 0x1132500,
 	/* PlayerDiveMosaic */ 0x11686a6c,
