@@ -243,7 +243,7 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
     {
         auto* funcAddr = GetFunctionAddress(offsets.SetupResinList);
         if (funcAddr)
-            offsets.ResinList = Scanner::ReadFieldOffset(funcAddr, 0x27);
+            offsets.ResinList = Scanner::ReadFieldOffset(funcAddr, 0x1A);
     }
     // If SetupResinList couldn't be resolved, ResinList stays as fallback.
 }
