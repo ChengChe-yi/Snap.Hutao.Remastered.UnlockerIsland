@@ -6,15 +6,15 @@ struct HookFunctionOffsets
 {
 	DWORD SetUid;                              // MonoUIWaterMask.SetUID
 	DWORD SetFov;                              // [pattern scan]
-	DWORD SetFog;                              //
-	DWORD GetFps;                              //
+	DWORD SetFog;
+	DWORD GetFps;
 	DWORD SetFps;                              // 双层跳板
 
 	DWORD OpenTeam;                            // JGDDADKMLDL.DDFODLGCHGM  [pattern scan]
 	DWORD OpenTeamAdvanced;                    // JGDDADKMLDL.LBLECKJEGOI  [pattern scan]
 	DWORD CheckEnter;                          // [pattern scan]
 
-	DWORD QuestBanner;                         //
+	DWORD QuestBanner;
 	DWORD FindObject;                          // GameObject.Find
 	DWORD ObjectActive;                        // GameObject.set_active
 
@@ -27,18 +27,18 @@ struct HookFunctionOffsets
 	DWORD CombineEntry;                        // NBJLAEKBCIM.DNJNIKDKECD  [pattern scan]
 	DWORD CombineEntryPartner;                 // FGPIAOKFJCE.NJCOCBAONEC  [pattern scan]
 
-	DWORD SetupResinList;                      //
-	DWORD ResinList;                           //
+	DWORD SetupResinList;
+	DWORD ResinList;
 
 	DWORD FindString;                          // internal method  [pattern scan]
-	DWORD PlayerPerspective;                   //
+	DWORD PlayerPerspective;
 
 	DWORD IsObjectActive;                      // GameObject.get_active
 	DWORD GameUpdate;                          // MainThreadDispatcher.Update
 	DWORD Reserved1;
 	DWORD Reserved2;
 	DWORD Reserved3;
-	DWORD Reserved4;
+	DWORD FastSkipTalk;                        // 跳过对话冷却（NOP 补丁地址，国服 0x9123FBE）
 	DWORD SetText;                             // UnityEngine.UI.Text.set_text
 	DWORD AvatarPaimonAppear;                  // GlobalActor.AvatarPaimonAppear
 
@@ -50,7 +50,7 @@ struct HookFunctionOffsets
 
 	DWORD CheckCanOpenMap;                     // [pattern scan]
 
-	DWORD InLevelClockPageOkButtonClicked;     //
-	DWORD InLevelClockPageCloseButtonClicked;  //
-	DWORD ClosePage;                           //
+	DWORD InLevelClockPageOkButtonClicked;
+	DWORD InLevelClockPageCloseButtonClicked;
+	DWORD ClosePage;
 };

@@ -39,6 +39,7 @@ struct HookEnvironment
     DWORD CombineHotkey;
     BOOL  WeakMapCheck;
     BOOL  DisablePlayerDiveMosaic;
+    BOOL  FastSkipTalk;
 
     HookFunctionOffsets Offsets;
 };

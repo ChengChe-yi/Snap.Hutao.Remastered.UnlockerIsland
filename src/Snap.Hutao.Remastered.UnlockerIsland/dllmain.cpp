@@ -108,6 +108,7 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
 		std::cout << "InLevelClockPageSpeedUp = " << g_pEnv->InLevelClockPageSpeedUp << std::endl;
 		std::cout << "CombineHotkey = 0x" << std::hex << g_pEnv->CombineHotkey << std::dec << std::endl;
 		std::cout << "WeakMapCheck = " << g_pEnv->WeakMapCheck << std::endl;
+		std::cout << "FastSkipTalk = " << g_pEnv->FastSkipTalk << std::endl;
 	}
 
 	SetupHooks();
@@ -143,7 +144,7 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
 		std::cout << "    /* Reserved1 */ 0x" << std::hex << o.Reserved1 << "," << std::endl;
 		std::cout << "    /* Reserved2 */ 0x" << std::hex << o.Reserved2 << "," << std::endl;
 		std::cout << "    /* Reserved3 */ 0x" << std::hex << o.Reserved3 << "," << std::endl;
-		std::cout << "    /* Reserved4 */ 0x" << std::hex << o.Reserved4 << "," << std::endl;
+		std::cout << "    /* FastSkipTalk */ 0x" << std::hex << o.FastSkipTalk << "," << std::endl;
 		std::cout << "    /* SetText */ 0x" << std::hex << o.SetText << "," << std::endl;
 		std::cout << "    /* AvatarPaimonAppear */ 0x" << std::hex << o.AvatarPaimonAppear << "," << std::endl;
 		std::cout << "    /* GetComponent */ 0x" << std::hex << o.GetComponent << "," << std::endl;

@@ -179,6 +179,7 @@
     <ClInclude Include="function\InLevelClockPageSpeedUp.h" />
     <ClInclude Include="function\CombineHotkey.h" />
     <ClInclude Include="function\WeakMapCheck.h" />
+    <ClInclude Include="function\FastSkipTalk.h" />
     <ClInclude Include="GamepadHotSwitch.h" />
     <ClInclude Include="HookEnvironment.h" />
     <ClInclude Include="HookFunctionOffsets.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="function\InLevelClockPageSpeedUp.cpp" />
     <ClCompile Include="function\CombineHotkey.cpp" />
     <ClCompile Include="function\WeakMapCheck.cpp" />
+    <ClCompile Include="function\FastSkipTalk.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

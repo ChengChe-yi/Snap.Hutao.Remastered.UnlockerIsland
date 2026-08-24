@@ -20,6 +20,7 @@
 #include "../function/InLevelClockPageSpeedUp.h"
 #include "../function/CombineHotkey.h"
 #include "../function/WeakMapCheck.h"
+#include "../function/FastSkipTalk.h"
 
 #include "../Cache.h"
 #include "../utils/Task.h"
@@ -241,6 +242,7 @@ void SetupHooks()
 	g_functions.push_back(new InLevelClockPageSpeedUp());
 	g_functions.push_back(new CombineHotkey());
 	g_functions.push_back(new WeakMapCheck());
+	g_functions.push_back(new FastSkipTalk());
 
 	// Initialize all functions (resolves offsets, creates MinHook hooks)
 	for (auto* func : g_functions)

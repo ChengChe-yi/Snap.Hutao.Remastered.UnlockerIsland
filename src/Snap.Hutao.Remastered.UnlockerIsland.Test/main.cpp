@@ -297,6 +297,7 @@ static void ConfigureEnvironment(HookEnvironment& env)
     env.GamepadHotSwitch     = FALSE;
     env.InLevelClockPageSpeedUp = TRUE;
     env.WeakMapCheck         = TRUE;
+    env.FastSkipTalk         = TRUE;
     env.CombineHotkey        = VK_F12;
 
     // Resin item overrides
