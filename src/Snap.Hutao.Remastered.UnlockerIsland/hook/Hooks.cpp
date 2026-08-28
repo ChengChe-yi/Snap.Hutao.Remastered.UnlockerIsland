@@ -303,6 +303,7 @@ static void HookGameUpdate(void* pThis)
 static void HookSetUID(void* pThis, uint32_t uid)
 {
 	g_pEnv->Uid = uid;
+	HidePlayerInfo::NotifyUidChanged();
 
 	if (originalSetUID)
 	{

@@ -4,6 +4,7 @@
 #include "../Cache.h"
 #include "../Logger.h"
 #include "../Constants.h"
+#include "HidePlayerInfo.h"
 #include "HooksShared.h"
 
 #include <string>
@@ -41,6 +42,11 @@ bool HideGrass::IsEnabled()
 
 void HideGrass::HookSetActive(void* pThis, bool active)
 {
+    if (HidePlayerInfo::FilterSetActive(pThis, active))
+    {
+        return;
+    }
+
     if (g_pEnv->HideGrass && !CheckResistInBeyd() && active && getName)
     {
         GetNameFn getNameFunc = (GetNameFn)getName;
