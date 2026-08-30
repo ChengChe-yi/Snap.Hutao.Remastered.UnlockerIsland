@@ -55,7 +55,7 @@
       <Filter>头文件</Filter>
     </ClInclude>
 
-    <ClInclude Include="Cache.h">
+    <ClInclude Include="BeyondResist.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
@@ -160,7 +160,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
 
-    <ClCompile Include="Cache.cpp">
+    <ClCompile Include="BeyondResist.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">

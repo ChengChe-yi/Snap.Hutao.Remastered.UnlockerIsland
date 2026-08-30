@@ -7,7 +7,7 @@
 // ============================================================
 // Shared function pointers resolved from offsets.
 // These are used across multiple IFunction implementations
-// and by Cache.cpp / HookWndProc.cpp.
+// and by BeyondResist.cpp / HookWndProc.cpp.
 // ============================================================
 
 // --- Core utilities used by many features ---
@@ -15,9 +15,7 @@ extern LPVOID findString;       // FindStringFn
 extern LPVOID findGameObject;   // FindGameObjectFn
 extern LPVOID setActive;        // SetActiveFn (also hooked by HideGrass)
 extern LPVOID getActive;        // GetActiveFn
-extern LPVOID getComponent;     // GetComponentFn (used by Cache)
 extern LPVOID getName;          // GetNameFn (used by HideGrass)
-extern LPVOID setText;          // SetTextFn (used by Cache for color replacement)
 
 // --- Input device switching (used by TouchMode, GamepadHotSwitch) ---
 extern LPVOID switchInputDeviceToTouchScreen;
@@ -63,6 +61,7 @@ extern LPVOID originalSetActive;
 extern LPVOID originalSetupResinList;
 extern LPVOID originalInLevelClockPageOkButtonClicked;
 extern LPVOID originalGameUpdate;
+extern LPVOID originalSetWaterMaskUID;
 
 // --- Non-hooked function call targets ---
 extern LPVOID setFrameCount;

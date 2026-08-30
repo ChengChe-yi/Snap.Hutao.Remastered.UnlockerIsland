@@ -1,7 +1,7 @@
 #include "HideGrass.h"
 #include "../framework.h"
 #include "../dllmain.h"
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "../Logger.h"
 #include "../Constants.h"
 #include "HidePlayerInfo.h"

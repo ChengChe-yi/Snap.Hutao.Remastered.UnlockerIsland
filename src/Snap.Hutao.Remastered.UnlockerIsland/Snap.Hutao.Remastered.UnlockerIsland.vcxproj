@@ -154,7 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cache.h" />
+    <ClInclude Include="BeyondResist.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="framework.h" />
@@ -194,7 +194,7 @@
     <ClInclude Include="utils\Task.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cache.cpp" />
+    <ClCompile Include="BeyondResist.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="framework.cpp" />
