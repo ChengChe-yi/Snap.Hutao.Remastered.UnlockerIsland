@@ -1,7 +1,7 @@
 #include "EnableSetFps.h"
 #include "../framework.h"
 #include "../dllmain.h"
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "../Logger.h"
 #include "HooksShared.h"
 

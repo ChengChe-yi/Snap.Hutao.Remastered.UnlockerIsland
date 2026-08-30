@@ -54,6 +54,8 @@ extern std::string InLevelClockPageCloseButtonClickedPattern;
 extern std::string GetComponentPattern;
 extern std::string AvatarPaimonAppearPattern;
 extern std::string SetTextPattern;
+extern std::string SetWaterMaskUIDPattern;
+extern std::string SetupPlayerProfilePagePattern;
 
 // Hardcoded offsets (used when game does not provide offsets via shared memory)
 extern HookFunctionOffsets g_ChinaOffsets;

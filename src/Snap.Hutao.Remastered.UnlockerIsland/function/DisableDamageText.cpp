@@ -1,7 +1,7 @@
 #include "DisableDamageText.h"
 #include "../framework.h"
 #include "../dllmain.h"
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "HooksShared.h"
 
 typedef void(*ShowOneDamageTextExFn)(void*, int, int, int, float, Il2CppString*, void*, void*, int);

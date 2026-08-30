@@ -1,7 +1,7 @@
 #include "RemoveTeamProgress.h"
 #include "../framework.h"
 #include "../dllmain.h"
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "HooksShared.h"
 
 typedef bool(*CheckCanEnterFn)();

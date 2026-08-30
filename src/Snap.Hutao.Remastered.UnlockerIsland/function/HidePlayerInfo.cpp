@@ -7,7 +7,33 @@
 typedef Il2CppString* (*FindStringFn)(const char*);
 typedef void* (*FindGameObjectFn)(void*);
 typedef void(*SetActiveFn)(void*, bool);
-typedef bool(*GetActiveFn)(void*);
+
+static void* FindObjectByPath(
+    const char* path,
+    FindStringFn findStringFunc,
+    FindGameObjectFn findGameObjectFunc)
+{
+    Il2CppString* pathString = findStringFunc(path);
+    return pathString ? findGameObjectFunc(pathString) : nullptr;
+}
+
+static void ForceHide(
+    void* object,
+    SetActiveFn setActiveFunc)
+{
+    if (!object)
+    {
+        return;
+    }
+
+    __try
+    {
+        setActiveFunc(object, false);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+    }
+}
 
 void HidePlayerInfo::Initialize()
 {
@@ -28,32 +54,21 @@ void HidePlayerInfo::Initialize()
             setActive = GetFunctionAddress(g_pEnv->Offsets.ObjectActive);
         }
     }
-
-    if (g_pEnv->Offsets.IsObjectActive)
-    {
-        if (!getActive)
-        {
-            getActive = GetFunctionAddress(g_pEnv->Offsets.IsObjectActive);
-        }
-    }
 }
 
 void HidePlayerInfo::OnUpdate()
+{
+    // UID hiding is event-driven from the SetWaterMaskUID hook; no polling.
+}
+
+void HidePlayerInfo::HideUidWatermark()
 {
     if (!g_pEnv->HidePlayerInfo)
     {
         return;
     }
 
-    // Execute logic only every 200ms to reduce performance impact
-    ULONGLONG now = GetTickCount64();
-    if (now - m_lastExecuteTime < THROTTLE_MS)
-    {
-        return;
-    }
-    m_lastExecuteTime = now;
-
-    if (!findString || !findGameObject || !setActive || !getActive)
+    if (!findString || !findGameObject || !setActive)
     {
         return;
     }
@@ -62,35 +77,8 @@ void HidePlayerInfo::OnUpdate()
     FindGameObjectFn findGameObjectFunc = (FindGameObjectFn)findGameObject;
     SetActiveFn setActiveFunc = (SetActiveFn)setActive;
 
-    Il2CppString* uidStrObj = findStringFunc(UID_PATH);
-    if (uidStrObj)
-    {
-        void* uidObj = findGameObjectFunc(uidStrObj);
-        if (uidObj)
-        {
-            setActiveFunc(uidObj, false);
-        }
-    }
-
-    Il2CppString* profileUidStrObj = findStringFunc(PROFILE_UID_PATH);
-    if (profileUidStrObj)
-    {
-        void* profileUidObj = findGameObjectFunc(profileUidStrObj);
-        if (profileUidObj)
-        {
-            setActiveFunc(profileUidObj, false);
-        }
-    }
-
-    Il2CppString* profileNameStrObj = findStringFunc(PROFILE_NAME_PATH);
-    if (profileNameStrObj)
-    {
-        void* profileNameObj = findGameObjectFunc(profileNameStrObj);
-        if (profileNameObj)
-        {
-            setActiveFunc(profileNameObj, false);
-        }
-    }
+    void* uidObj = FindObjectByPath(UID_PATH, findStringFunc, findGameObjectFunc);
+    ForceHide(uidObj, setActiveFunc);
 }
 
 bool HidePlayerInfo::IsEnabled()

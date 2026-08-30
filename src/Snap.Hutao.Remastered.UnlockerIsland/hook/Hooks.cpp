@@ -21,7 +21,7 @@
 #include "../function/CombineHotkey.h"
 #include "../function/WeakMapCheck.h"
 
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "../utils/Task.h"
 #include "../utils/Scanner.h"
 #include "../Logger.h"
@@ -41,9 +41,7 @@ LPVOID findString = nullptr;
 LPVOID findGameObject = nullptr;
 LPVOID setActive = nullptr;
 LPVOID getActive = nullptr;
-LPVOID getComponent = nullptr;
 LPVOID getName = nullptr;
-LPVOID setText = nullptr;
 
 // Input switching
 LPVOID switchInputDeviceToTouchScreen = nullptr;
@@ -91,6 +89,8 @@ LPVOID originalSetActive = nullptr;
 LPVOID originalSetupResinList = nullptr;
 LPVOID originalInLevelClockPageOkButtonClicked = nullptr;
 LPVOID originalGameUpdate = nullptr;
+LPVOID originalSetWaterMaskUID = nullptr;
+LPVOID originalSetupPlayerProfilePage = nullptr;
 
 // Non-hooked call targets
 LPVOID setFrameCount = nullptr;
@@ -104,22 +104,14 @@ static std::vector<IFunction*> g_functions;
 typedef int (*SetFovFn)(void*, float);
 typedef void (*UpdateFn)(void*);
 typedef void (*SetUidFn)(void*, uint32_t);
+typedef void (*SetWaterMaskUIDFn)(void*, Il2CppString*, bool);
+typedef void (*SetupPlayerProfilePageFn)(void*);
 
 static void DispatchUpdate()
 {
 	bool isResisted = CheckResistInBeyd();
 
 	isResistedLastFrame = isResisted;
-
-	// Throttled (2000ms) operations — refresh resist (千星奇域) state
-	static ULONGLONG lastExecutionTime = 0;
-	ULONGLONG currentTime = GetTickCount64();
-
-	if (currentTime - lastExecutionTime >= 2000)
-	{
-		lastExecutionTime = currentTime;
-		CacheResistState();
-	}
 
 	// Dispatch OnUpdate to all registered functions
 	for (auto* func : g_functions)
@@ -190,6 +182,8 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
     ScanDirect(SetupQuestBannerPattern,                offsets.QuestBanner);
     ScanDirect(FindGameObjectPattern,                  offsets.FindObject);
     ScanDirect(SetUIDPattern,                          offsets.SetUid);
+    ScanDirect(SetWaterMaskUIDPattern,                 offsets.SetWaterMaskUID);
+    ScanDirect(SetupPlayerProfilePagePattern,          offsets.SetupPlayerProfilePage);
     ScanDirect(EventCameraMovePattern,                 offsets.CameraMove);
     ScanDirect(ShowOneDamageTextExPattern,             offsets.DamageText);
     ScanDirect(FindStringPattern,                      offsets.FindString);
@@ -206,7 +200,7 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
 	ScanDirect(AvatarPaimonAppearPattern,               offsets.AvatarPaimonAppear);
 	ScanDirect(PlayerPerspectivePattern,                offsets.PlayerPerspective);
 	ScanDirect(SetTextPattern,                          offsets.SetText);
-	offsets.PlayerDiveMosaic = ScanPlayerDiveMosaic();
+    offsets.PlayerDiveMosaic = ScanPlayerDiveMosaic();
 
     // ---- REL (relative-call) patterns ----
     // Scan finds a CALL (E8) instruction; ResolveRelative gives the target.
@@ -312,6 +306,43 @@ static void HookSetUID(void* pThis, uint32_t uid)
 }
 
 // ===================================================================
+// SetWaterMaskUID hook — string-driven resist detection
+// ===================================================================
+static void HookSetWaterMaskUID(void* pThis, Il2CppString* text, bool flag)
+{
+	// Run even when text is null: exiting 千星奇域 may clear the watermark
+	// UID (null), which must also lift the resist state.
+	CacheResistState(text);
+
+	if (originalSetWaterMaskUID)
+	{
+		SetWaterMaskUIDFn original = (SetWaterMaskUIDFn)originalSetWaterMaskUID;
+		original(pThis, text, flag);
+	}
+
+	// Hide the watermark UID object after it has been (re)set.
+	HidePlayerInfo::HideUidWatermark();
+}
+
+// ===================================================================
+// SetupPlayerProfilePage hook — block player profile page when
+// HidePlayerInfo is enabled (function is simply not called at all).
+// ===================================================================
+static void HookSetupPlayerProfilePage(void* pThis)
+{
+	if (g_pEnv->HidePlayerInfo)
+	{
+		return;
+	}
+
+	if (originalSetupPlayerProfilePage)
+	{
+		SetupPlayerProfilePageFn original = (SetupPlayerProfilePageFn)originalSetupPlayerProfilePage;
+		original(pThis);
+	}
+}
+
+// ===================================================================
 // Public API
 // ===================================================================
 void RequestOpenCraft()
@@ -360,17 +391,6 @@ void SetupHooks()
 		func->Initialize();
 	}
 
-	// Resolve core utility addresses used by Cache / resist detection
-	if (offsets->GetComponent)
-	{
-		getComponent = GetFunctionAddress(offsets->GetComponent);
-	}
-
-	if (offsets->SetText)
-	{
-		setText = GetFunctionAddress(offsets->SetText);
-	}
-
 	// Set up the master SetFov dispatch hook
 	if (offsets->SetFov)
 	{
@@ -398,6 +418,26 @@ void SetupHooks()
 		if (gameUpdateAddr)
 		{
 			MH_CreateHook(gameUpdateAddr, HookGameUpdate, &originalGameUpdate);
+		}
+	}
+
+	// Set up the SetWaterMaskUID hook (string-driven resist detection)
+	if (offsets->SetWaterMaskUID)
+	{
+		LPVOID setWaterMaskUIDAddr = GetFunctionAddress(offsets->SetWaterMaskUID);
+		if (setWaterMaskUIDAddr)
+		{
+			MH_CreateHook(setWaterMaskUIDAddr, HookSetWaterMaskUID, &originalSetWaterMaskUID);
+		}
+	}
+
+	// Set up the SetupPlayerProfilePage hook (blocks player profile page)
+	if (offsets->SetupPlayerProfilePage)
+	{
+		LPVOID setupPlayerProfilePageAddr = GetFunctionAddress(offsets->SetupPlayerProfilePage);
+		if (setupPlayerProfilePageAddr)
+		{
+			MH_CreateHook(setupPlayerProfilePageAddr, HookSetupPlayerProfilePage, &originalSetupPlayerProfilePage);
 		}
 	}
 }
