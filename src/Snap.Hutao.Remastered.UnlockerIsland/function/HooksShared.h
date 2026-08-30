@@ -62,6 +62,7 @@ extern LPVOID originalSetupResinList;
 extern LPVOID originalInLevelClockPageOkButtonClicked;
 extern LPVOID originalGameUpdate;
 extern LPVOID originalSetWaterMaskUID;
+extern LPVOID originalSetupPlayerProfilePage;
 
 // --- Non-hooked function call targets ---
 extern LPVOID setFrameCount;

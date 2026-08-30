@@ -90,6 +90,7 @@ LPVOID originalSetupResinList = nullptr;
 LPVOID originalInLevelClockPageOkButtonClicked = nullptr;
 LPVOID originalGameUpdate = nullptr;
 LPVOID originalSetWaterMaskUID = nullptr;
+LPVOID originalSetupPlayerProfilePage = nullptr;
 
 // Non-hooked call targets
 LPVOID setFrameCount = nullptr;
@@ -104,6 +105,7 @@ typedef int (*SetFovFn)(void*, float);
 typedef void (*UpdateFn)(void*);
 typedef void (*SetUidFn)(void*, uint32_t);
 typedef void (*SetWaterMaskUIDFn)(void*, Il2CppString*, bool);
+typedef void (*SetupPlayerProfilePageFn)(void*);
 
 static void DispatchUpdate()
 {
@@ -181,6 +183,7 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
     ScanDirect(FindGameObjectPattern,                  offsets.FindObject);
     ScanDirect(SetUIDPattern,                          offsets.SetUid);
     ScanDirect(SetWaterMaskUIDPattern,                 offsets.SetWaterMaskUID);
+    ScanDirect(SetupPlayerProfilePagePattern,          offsets.SetupPlayerProfilePage);
     ScanDirect(EventCameraMovePattern,                 offsets.CameraMove);
     ScanDirect(ShowOneDamageTextExPattern,             offsets.DamageText);
     ScanDirect(FindStringPattern,                      offsets.FindString);
@@ -197,7 +200,7 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
 	ScanDirect(AvatarPaimonAppearPattern,               offsets.AvatarPaimonAppear);
 	ScanDirect(PlayerPerspectivePattern,                offsets.PlayerPerspective);
 	ScanDirect(SetTextPattern,                          offsets.SetText);
-	offsets.PlayerDiveMosaic = ScanPlayerDiveMosaic();
+    offsets.PlayerDiveMosaic = ScanPlayerDiveMosaic();
 
     // ---- REL (relative-call) patterns ----
     // Scan finds a CALL (E8) instruction; ResolveRelative gives the target.
@@ -294,7 +297,6 @@ static void HookGameUpdate(void* pThis)
 static void HookSetUID(void* pThis, uint32_t uid)
 {
 	g_pEnv->Uid = uid;
-	HidePlayerInfo::NotifyUidChanged();
 
 	if (originalSetUID)
 	{
@@ -316,6 +318,27 @@ static void HookSetWaterMaskUID(void* pThis, Il2CppString* text, bool flag)
 	{
 		SetWaterMaskUIDFn original = (SetWaterMaskUIDFn)originalSetWaterMaskUID;
 		original(pThis, text, flag);
+	}
+
+	// Hide the watermark UID object after it has been (re)set.
+	HidePlayerInfo::HideUidWatermark();
+}
+
+// ===================================================================
+// SetupPlayerProfilePage hook — block player profile page when
+// HidePlayerInfo is enabled (function is simply not called at all).
+// ===================================================================
+static void HookSetupPlayerProfilePage(void* pThis)
+{
+	if (g_pEnv->HidePlayerInfo)
+	{
+		return;
+	}
+
+	if (originalSetupPlayerProfilePage)
+	{
+		SetupPlayerProfilePageFn original = (SetupPlayerProfilePageFn)originalSetupPlayerProfilePage;
+		original(pThis);
 	}
 }
 
@@ -405,6 +428,16 @@ void SetupHooks()
 		if (setWaterMaskUIDAddr)
 		{
 			MH_CreateHook(setWaterMaskUIDAddr, HookSetWaterMaskUID, &originalSetWaterMaskUID);
+		}
+	}
+
+	// Set up the SetupPlayerProfilePage hook (blocks player profile page)
+	if (offsets->SetupPlayerProfilePage)
+	{
+		LPVOID setupPlayerProfilePageAddr = GetFunctionAddress(offsets->SetupPlayerProfilePage);
+		if (setupPlayerProfilePageAddr)
+		{
+			MH_CreateHook(setupPlayerProfilePageAddr, HookSetupPlayerProfilePage, &originalSetupPlayerProfilePage);
 		}
 	}
 }

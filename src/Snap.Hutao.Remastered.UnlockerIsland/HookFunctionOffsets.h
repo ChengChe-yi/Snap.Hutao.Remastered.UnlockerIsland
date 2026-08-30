@@ -36,7 +36,7 @@ struct HookFunctionOffsets
 	DWORD IsObjectActive;                      // GameObject.get_active
 	DWORD GameUpdate;                          // MainThreadDispatcher.Update
 	DWORD Reserved1;
-	DWORD Reserved2;
+	DWORD SetupPlayerProfilePage;               // [pattern scan] (was Reserved2)
 	DWORD SetWaterMaskUID;                     // MonoUIWaterMask.SetWaterMaskUID  [pattern scan] (was Reserved3)
 	DWORD Reserved4;
 	DWORD SetText;                             // UnityEngine.UI.Text.set_text
