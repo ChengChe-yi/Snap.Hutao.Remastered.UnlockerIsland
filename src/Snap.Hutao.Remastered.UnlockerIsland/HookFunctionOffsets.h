@@ -36,9 +36,9 @@ struct HookFunctionOffsets
 	DWORD IsObjectActive;                      // GameObject.get_active
 	DWORD GameUpdate;                          // MainThreadDispatcher.Update
 	DWORD Reserved1;
-	DWORD Reserved2;
-	DWORD Reserved3;
-	DWORD FastSkipTalk;                        // 跳过对话冷却（NOP 补丁地址，国服 0x9123FBE）
+	DWORD SetupPlayerProfilePage;               // [pattern scan] (was Reserved2)
+	DWORD SetWaterMaskUID;                     // MonoUIWaterMask.SetWaterMaskUID  [pattern scan] (was Reserved3)
+	DWORD FastSkipTalk;                        // 跳过对话冷却（NOP 补丁地址，国服 0x9123FBE）(was Reserved4)
 	DWORD SetText;                             // UnityEngine.UI.Text.set_text
 	DWORD AvatarPaimonAppear;                  // GlobalActor.AvatarPaimonAppear
 

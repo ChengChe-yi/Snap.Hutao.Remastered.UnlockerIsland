@@ -142,8 +142,8 @@ DWORD WINAPI WorkerThread(LPVOID lpParam)
 		std::cout << "    /* IsObjectActive */ 0x" << std::hex << o.IsObjectActive << "," << std::endl;
 		std::cout << "    /* GameUpdate */ 0x" << std::hex << o.GameUpdate << "," << std::endl;
 		std::cout << "    /* Reserved1 */ 0x" << std::hex << o.Reserved1 << "," << std::endl;
-		std::cout << "    /* Reserved2 */ 0x" << std::hex << o.Reserved2 << "," << std::endl;
-		std::cout << "    /* Reserved3 */ 0x" << std::hex << o.Reserved3 << "," << std::endl;
+		std::cout << "    /* SetupPlayerProfilePage */ 0x" << std::hex << o.SetupPlayerProfilePage << "," << std::endl;
+		std::cout << "    /* SetWaterMaskUID */ 0x" << std::hex << o.SetWaterMaskUID << "," << std::endl;
 		std::cout << "    /* FastSkipTalk */ 0x" << std::hex << o.FastSkipTalk << "," << std::endl;
 		std::cout << "    /* SetText */ 0x" << std::hex << o.SetText << "," << std::endl;
 		std::cout << "    /* AvatarPaimonAppear */ 0x" << std::hex << o.AvatarPaimonAppear << "," << std::endl;

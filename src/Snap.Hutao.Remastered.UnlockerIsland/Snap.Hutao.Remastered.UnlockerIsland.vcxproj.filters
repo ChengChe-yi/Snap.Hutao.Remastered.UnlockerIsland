@@ -55,7 +55,7 @@
       <Filter>头文件</Filter>
     </ClInclude>
 
-    <ClInclude Include="Cache.h">
+    <ClInclude Include="BeyondResist.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
@@ -148,6 +148,9 @@
     <ClInclude Include="utils\Patch.h">
       <Filter>头文件\utils</Filter>
     </ClInclude>
+    <ClInclude Include="utils\Scanner.h">
+      <Filter>头文件\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -160,7 +163,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
 
-    <ClCompile Include="Cache.cpp">
+    <ClCompile Include="BeyondResist.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
@@ -245,6 +248,9 @@
       <Filter>源文件\function</Filter>
     </ClCompile>
     <ClCompile Include="utils\Patch.cpp">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Scanner.cpp">
       <Filter>源文件\utils</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,9 +8,16 @@ const char fastSkipTalkPatchBytes[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 
 void FastSkipTalk::Initialize()
 {
-    if (g_pEnv->Offsets.FastSkipTalk)
+    // NOP patch address cannot be pattern-scanned; hardcode the CN RVA.
+    DWORD offset = g_pEnv->Offsets.FastSkipTalk;
+    if (offset == 0 && !g_pEnv->IsOversea)
     {
-        LPVOID addr = GetFunctionAddress(g_pEnv->Offsets.FastSkipTalk);
+        offset = 0x9123FBE;
+    }
+
+    if (offset)
+    {
+        LPVOID addr = GetFunctionAddress(offset);
         if (addr)
         {
             this->patch = new Patch(addr, fastSkipTalkPatchBytes, 6);

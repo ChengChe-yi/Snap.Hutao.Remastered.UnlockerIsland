@@ -13,7 +13,7 @@ public:
     void SetEnabled(bool enabled) override { (void)enabled; }
     FunctionType GetFunctionType() override { return FunctionType::HIDE_PLAYER_INFO; }
 
-private:
-    ULONGLONG m_lastExecuteTime = 0;
-    static constexpr ULONGLONG THROTTLE_MS = 200;
+    // Event-driven hiding: called from the SetWaterMaskUID hook right after
+    // the original runs. Hides the watermark UID object immediately.
+    static void HideUidWatermark();
 };

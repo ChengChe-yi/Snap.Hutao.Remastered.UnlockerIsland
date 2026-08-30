@@ -1,7 +1,7 @@
 #include "CombineHotkey.h"
 #include "../framework.h"
 #include "../dllmain.h"
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "../Constants.h"
 #include "HooksShared.h"
 

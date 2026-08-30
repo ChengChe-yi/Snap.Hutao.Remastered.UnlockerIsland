@@ -22,12 +22,14 @@
 #include "../function/WeakMapCheck.h"
 #include "../function/FastSkipTalk.h"
 
-#include "../Cache.h"
+#include "../BeyondResist.h"
 #include "../utils/Task.h"
+#include "../utils/Scanner.h"
 #include "../Logger.h"
 #include "../hook/HookWndProc.h"
 
 #include <vector>
+#include <Windows.h>
 
 // Offsets are defined in Constants.cpp (g_ChinaOffsets / g_OverseaOffsets)
 
@@ -40,9 +42,7 @@ LPVOID findString = nullptr;
 LPVOID findGameObject = nullptr;
 LPVOID setActive = nullptr;
 LPVOID getActive = nullptr;
-LPVOID getComponent = nullptr;
 LPVOID getName = nullptr;
-LPVOID setText = nullptr;
 
 // Input switching
 LPVOID switchInputDeviceToTouchScreen = nullptr;
@@ -90,6 +90,8 @@ LPVOID originalSetActive = nullptr;
 LPVOID originalSetupResinList = nullptr;
 LPVOID originalInLevelClockPageOkButtonClicked = nullptr;
 LPVOID originalGameUpdate = nullptr;
+LPVOID originalSetWaterMaskUID = nullptr;
+LPVOID originalSetupPlayerProfilePage = nullptr;
 
 // Non-hooked call targets
 LPVOID setFrameCount = nullptr;
@@ -103,22 +105,14 @@ static std::vector<IFunction*> g_functions;
 typedef int (*SetFovFn)(void*, float);
 typedef void (*UpdateFn)(void*);
 typedef void (*SetUidFn)(void*, uint32_t);
+typedef void (*SetWaterMaskUIDFn)(void*, Il2CppString*, bool);
+typedef void (*SetupPlayerProfilePageFn)(void*);
 
 static void DispatchUpdate()
 {
 	bool isResisted = CheckResistInBeyd();
 
 	isResistedLastFrame = isResisted;
-
-	// Throttled (2000ms) operations — refresh resist (千星奇域) state
-	static ULONGLONG lastExecutionTime = 0;
-	ULONGLONG currentTime = GetTickCount64();
-
-	if (currentTime - lastExecutionTime >= 2000)
-	{
-		lastExecutionTime = currentTime;
-		CacheResistState();
-	}
 
 	// Dispatch OnUpdate to all registered functions
 	for (auto* func : g_functions)
@@ -128,6 +122,125 @@ static void DispatchUpdate()
 			func->OnUpdate();
 		}
 	}
+}
+
+DWORD ScanPlayerDiveMosaic()
+{
+	void* caller = Scanner::Scan(PlayerDiveMosaicPattern);
+	void* displayEffect = Scanner::Scan(DisplayEffectPattern);
+
+	if (!caller || !displayEffect)
+		return 0;
+
+	int window = 0x800;
+	void* lastCall = nullptr;
+
+	for (int i = 0; i < window - 4; ++i)
+	{
+		uint8_t* currentByte = (uint8_t*)caller + i;
+
+		if (IsCallOpcode(currentByte))
+		{
+			void* target = Scanner::ResolveRelative(currentByte, 1, 5);
+			if (target == displayEffect)
+			{
+				lastCall = currentByte;
+			}
+		}
+	}
+
+	if (lastCall)
+	{
+		return (DWORD)GetVirtualAddress((INT64)lastCall);
+	}
+
+	return 0;
+}
+
+// ===================================================================
+// Pattern-scan offset resolver
+// Overrides whatever offsets the test or fallback tables provided
+// with values obtained via pattern scanning. Functions that have no
+// pattern remain at their fallback value (which may be 0 / nullptr).
+// ===================================================================
+
+static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
+{
+	ZeroMemory(&offsets, sizeof(offsets));
+    // ---- Direct-address patterns (scan result IS the function) ----
+
+    auto ScanDirect = [&](const std::string& pattern, DWORD& out)
+    {
+        if (pattern.empty()) return;
+        if (auto* addr = Scanner::Scan(pattern))
+            out = (DWORD)GetVirtualAddress((INT64)addr);
+    };
+
+    ScanDirect(SetFovPattern,                        offsets.SetFov);
+    ScanDirect(SwitchInputDeviceToTouchScreenPattern, offsets.TouchInput);
+    ScanDirect(SwitchInputDeviceToJoypadPattern,      offsets.JoypadInput);
+    ScanDirect(SwitchInputDeviceToKeyboardPattern,    offsets.KeyboardMouseInput);
+    ScanDirect(SetupQuestBannerPattern,                offsets.QuestBanner);
+    ScanDirect(FindGameObjectPattern,                  offsets.FindObject);
+    ScanDirect(SetUIDPattern,                          offsets.SetUid);
+    ScanDirect(SetWaterMaskUIDPattern,                 offsets.SetWaterMaskUID);
+    ScanDirect(SetupPlayerProfilePagePattern,          offsets.SetupPlayerProfilePage);
+    ScanDirect(EventCameraMovePattern,                 offsets.CameraMove);
+    ScanDirect(ShowOneDamageTextExPattern,             offsets.DamageText);
+    ScanDirect(FindStringPattern,                      offsets.FindString);
+    ScanDirect(CraftEntryPartnerPattern,               offsets.CombineEntryPartner);
+    ScanDirect(CraftEntryPattern,                      offsets.CombineEntry);
+    ScanDirect(CheckCanEnterPattern,                   offsets.CheckEnter);
+    ScanDirect(OpenTeamPageAccordinglyPattern,         offsets.OpenTeamAdvanced);
+    ScanDirect(OpenTeamPattern,                        offsets.OpenTeam);
+    ScanDirect(GetNamePattern,                         offsets.GetName);
+    ScanDirect(GameUpdatePattern,                      offsets.GameUpdate);
+    ScanDirect(InLevelClockPageOkButtonClickedPattern,  offsets.InLevelClockPageOkButtonClicked);
+    ScanDirect(InLevelClockPageCloseButtonClickedPattern, offsets.InLevelClockPageCloseButtonClicked);
+	ScanDirect(GetComponentPattern,                     offsets.GetComponent);
+	ScanDirect(AvatarPaimonAppearPattern,               offsets.AvatarPaimonAppear);
+	ScanDirect(PlayerPerspectivePattern,                offsets.PlayerPerspective);
+	ScanDirect(SetTextPattern,                          offsets.SetText);
+    offsets.PlayerDiveMosaic = ScanPlayerDiveMosaic();
+
+    // ---- REL (relative-call) patterns ----
+    // Scan finds a CALL (E8) instruction; ResolveRelative gives the target.
+
+    auto ScanRel = [&](const std::string& pattern, DWORD& out)
+    {
+        if (pattern.empty()) return;
+        if (auto* addr = Scanner::Scan(pattern))
+            if (auto* target = Scanner::ResolveRelative(addr))
+                out = (DWORD)GetVirtualAddress((INT64)target);
+    };
+
+    ScanRel(GetFrameCountPattern,      offsets.GetFps);
+    ScanRel(SetFrameCountPattern,      offsets.SetFps);
+    ScanRel(SetActivePattern,          offsets.ObjectActive);
+    ScanRel(IsActivePattern,           offsets.IsObjectActive);
+    ScanRel(DisplayFogPattern,         offsets.SetFog);
+    //ScanRel(PlayerPerspectivePattern,  offsets.PlayerPerspective);
+    ScanRel(SetupResinListPattern,     offsets.SetupResinList);
+    ScanRel(CheckCanOpenMapPattern, offsets.CheckCanOpenMap);
+
+    // ---- Derived data offsets (read from code at a fixed offset) ----
+
+    // ClosePage = *(int32_t*)(ClosePageCallerPattern_result + 0x2A)
+    if (!ClosePageCallerPattern.empty())
+    {
+        if (auto* addr = Scanner::Scan(ClosePageCallerPattern))
+            offsets.ClosePage = Scanner::ReadFieldOffset(addr, 0x2A);
+    }
+
+    // ResinList = *(int32_t*)(SetupResinList_resolved + 0x27)
+    // needs SetupResinListPattern scanned & resolved first.
+    if (offsets.SetupResinList != 0)
+    {
+        auto* funcAddr = GetFunctionAddress(offsets.SetupResinList);
+        if (funcAddr)
+            offsets.ResinList = Scanner::ReadFieldOffset(funcAddr, 0x1A);
+    }
+    // If SetupResinList couldn't be resolved, ResinList stays as fallback.
 }
 
 // ===================================================================
@@ -194,6 +307,43 @@ static void HookSetUID(void* pThis, uint32_t uid)
 }
 
 // ===================================================================
+// SetWaterMaskUID hook — string-driven resist detection
+// ===================================================================
+static void HookSetWaterMaskUID(void* pThis, Il2CppString* text, bool flag)
+{
+	// Run even when text is null: exiting 千星奇域 may clear the watermark
+	// UID (null), which must also lift the resist state.
+	CacheResistState(text);
+
+	if (originalSetWaterMaskUID)
+	{
+		SetWaterMaskUIDFn original = (SetWaterMaskUIDFn)originalSetWaterMaskUID;
+		original(pThis, text, flag);
+	}
+
+	// Hide the watermark UID object after it has been (re)set.
+	HidePlayerInfo::HideUidWatermark();
+}
+
+// ===================================================================
+// SetupPlayerProfilePage hook — block player profile page when
+// HidePlayerInfo is enabled (function is simply not called at all).
+// ===================================================================
+static void HookSetupPlayerProfilePage(void* pThis)
+{
+	if (g_pEnv->HidePlayerInfo)
+	{
+		return;
+	}
+
+	if (originalSetupPlayerProfilePage)
+	{
+		SetupPlayerProfilePageFn original = (SetupPlayerProfilePageFn)originalSetupPlayerProfilePage;
+		original(pThis);
+	}
+}
+
+// ===================================================================
 // Public API
 // ===================================================================
 void RequestOpenCraft()
@@ -210,14 +360,7 @@ void SetupHooks()
 	HookFunctionOffsets* offsets = &g_pEnv->Offsets;
 	if (!g_pEnv->ProvideOffsets)
 	{
-		if (!g_pEnv->IsOversea)
-		{
-			offsets = &g_ChinaOffsets;
-		}
-		else
-		{
-			offsets = &g_OverseaOffsets;
-		}
+		ResolveOffsetsFromPatterns(*offsets);
 	}
 
 	g_pEnv->Offsets = *offsets;
@@ -250,17 +393,6 @@ void SetupHooks()
 		func->Initialize();
 	}
 
-	// Resolve core utility addresses used by Cache / resist detection
-	if (offsets->GetComponent)
-	{
-		getComponent = GetFunctionAddress(offsets->GetComponent);
-	}
-
-	if (offsets->SetText)
-	{
-		setText = GetFunctionAddress(offsets->SetText);
-	}
-
 	// Set up the master SetFov dispatch hook
 	if (offsets->SetFov)
 	{
@@ -288,6 +420,26 @@ void SetupHooks()
 		if (gameUpdateAddr)
 		{
 			MH_CreateHook(gameUpdateAddr, HookGameUpdate, &originalGameUpdate);
+		}
+	}
+
+	// Set up the SetWaterMaskUID hook (string-driven resist detection)
+	if (offsets->SetWaterMaskUID)
+	{
+		LPVOID setWaterMaskUIDAddr = GetFunctionAddress(offsets->SetWaterMaskUID);
+		if (setWaterMaskUIDAddr)
+		{
+			MH_CreateHook(setWaterMaskUIDAddr, HookSetWaterMaskUID, &originalSetWaterMaskUID);
+		}
+	}
+
+	// Set up the SetupPlayerProfilePage hook (blocks player profile page)
+	if (offsets->SetupPlayerProfilePage)
+	{
+		LPVOID setupPlayerProfilePageAddr = GetFunctionAddress(offsets->SetupPlayerProfilePage);
+		if (setupPlayerProfilePageAddr)
+		{
+			MH_CreateHook(setupPlayerProfilePageAddr, HookSetupPlayerProfilePage, &originalSetupPlayerProfilePage);
 		}
 	}
 }
