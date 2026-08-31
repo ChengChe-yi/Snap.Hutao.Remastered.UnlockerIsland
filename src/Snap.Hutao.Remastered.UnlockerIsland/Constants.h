@@ -12,6 +12,7 @@ extern const char* BEYD_PAIMON_PATH;
 extern const char* PROFILE_LAYER_PATH;
 extern const char* PROFILE_UID_PATH;
 extern const char* PROFILE_NAME_PATH;
+extern const char* PROFILE_BIRTHDAY_PATH;
 extern const char* CHAT_DIALOG_PATH;
 extern const char* FRIEND_PAGE_PATH;
 extern const char* UID_PATH;
