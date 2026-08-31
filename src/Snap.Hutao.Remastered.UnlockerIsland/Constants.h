@@ -56,6 +56,7 @@ extern std::string AvatarPaimonAppearPattern;
 extern std::string SetTextPattern;
 extern std::string SetWaterMaskUIDPattern;
 extern std::string SetupPlayerProfilePagePattern;
+extern std::string FastSkipTalkPattern;
 
 // Hardcoded offsets (used when game does not provide offsets via shared memory)
 extern HookFunctionOffsets g_ChinaOffsets;

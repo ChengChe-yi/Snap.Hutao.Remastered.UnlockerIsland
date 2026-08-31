@@ -232,6 +232,13 @@ static void ResolveOffsetsFromPatterns(HookFunctionOffsets& offsets)
             offsets.ClosePage = Scanner::ReadFieldOffset(addr, 0x2A);
     }
 
+    // FastSkipTalk = scan_result + 0x37E
+    if (!FastSkipTalkPattern.empty())
+    {
+        if (auto* addr = Scanner::Scan(FastSkipTalkPattern))
+            offsets.FastSkipTalk = (DWORD)(GetVirtualAddress((INT64)addr) + 0x37E);
+    }
+
     // ResinList = *(int32_t*)(SetupResinList_resolved + 0x27)
     // needs SetupResinListPattern scanned & resolved first.
     if (offsets.SetupResinList != 0)

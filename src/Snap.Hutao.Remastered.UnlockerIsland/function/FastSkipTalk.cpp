@@ -8,12 +8,7 @@ const char fastSkipTalkPatchBytes[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 
 void FastSkipTalk::Initialize()
 {
-    // NOP patch address cannot be pattern-scanned; hardcode the CN RVA.
     DWORD offset = g_pEnv->Offsets.FastSkipTalk;
-    if (offset == 0 && !g_pEnv->IsOversea)
-    {
-        offset = 0x9123FBE;
-    }
 
     if (offset)
     {
