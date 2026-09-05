@@ -7,6 +7,7 @@
 typedef Il2CppString* (*FindStringFn)(const char*);
 typedef void* (*FindGameObjectFn)(void*);
 typedef void(*SetActiveFn)(void*, bool);
+typedef void (*SetupPlayerProfilePageFn)(void*);
 
 static void* FindObjectByPath(
     const char* path,
@@ -54,6 +55,15 @@ void HidePlayerInfo::Initialize()
             setActive = GetFunctionAddress(g_pEnv->Offsets.ObjectActive);
         }
     }
+
+    if (g_pEnv->Offsets.SetupPlayerProfilePage)
+    {
+        LPVOID setupPlayerProfilePageAddr = GetFunctionAddress(g_pEnv->Offsets.SetupPlayerProfilePage);
+        if (setupPlayerProfilePageAddr)
+        {
+            MH_CreateHook(setupPlayerProfilePageAddr, &HidePlayerInfo::HookSetupPlayerProfilePage, &originalSetupPlayerProfilePage);
+        }
+    }
 }
 
 void HidePlayerInfo::OnUpdate()
@@ -81,7 +91,57 @@ void HidePlayerInfo::HideUidWatermark()
     ForceHide(uidObj, setActiveFunc);
 }
 
+void HidePlayerInfo::HideProfileInfo()
+{
+    if (!g_pEnv->HidePlayerInfo)
+    {
+        return;
+    }
+
+    if (!findString || !findGameObject || !setActive)
+    {
+        return;
+    }
+
+    FindStringFn findStringFunc = (FindStringFn)findString;
+    FindGameObjectFn findGameObjectFunc = (FindGameObjectFn)findGameObject;
+    SetActiveFn setActiveFunc = (SetActiveFn)setActive;
+
+    const char* profilePaths[] = {
+        PROFILE_UID_PATH,
+        PROFILE_NAME_PATH,
+        PROFILE_BIRTHDAY_PATH,
+    };
+
+    for (const char* path : profilePaths)
+    {
+        void* obj = FindObjectByPath(path, findStringFunc, findGameObjectFunc);
+        ForceHide(obj, setActiveFunc);
+    }
+}
+
 bool HidePlayerInfo::IsEnabled()
 {
     return g_pEnv->HidePlayerInfo != FALSE;
+}
+
+void* HidePlayerInfo::GetHookFunction()
+{
+    return (void*)&HidePlayerInfo::HookSetupPlayerProfilePage;
+}
+
+void HidePlayerInfo::HookSetupPlayerProfilePage(void* pThis)
+{
+    if (originalSetupPlayerProfilePage)
+    {
+        SetupPlayerProfilePageFn original = (SetupPlayerProfilePageFn)originalSetupPlayerProfilePage;
+        original(pThis);
+    }
+
+    // The page is allowed to open normally; hide the identity objects after
+    // the original has populated them.
+    if (g_pEnv->HidePlayerInfo)
+    {
+        HidePlayerInfo::HideProfileInfo();
+    }
 }

@@ -106,7 +106,6 @@ typedef int (*SetFovFn)(void*, float);
 typedef void (*UpdateFn)(void*);
 typedef void (*SetUidFn)(void*, uint32_t);
 typedef void (*SetWaterMaskUIDFn)(void*, Il2CppString*, bool);
-typedef void (*SetupPlayerProfilePageFn)(void*);
 
 static void DispatchUpdate()
 {
@@ -333,24 +332,6 @@ static void HookSetWaterMaskUID(void* pThis, Il2CppString* text, bool flag)
 }
 
 // ===================================================================
-// SetupPlayerProfilePage hook — block player profile page when
-// HidePlayerInfo is enabled (function is simply not called at all).
-// ===================================================================
-static void HookSetupPlayerProfilePage(void* pThis)
-{
-	if (g_pEnv->HidePlayerInfo)
-	{
-		return;
-	}
-
-	if (originalSetupPlayerProfilePage)
-	{
-		SetupPlayerProfilePageFn original = (SetupPlayerProfilePageFn)originalSetupPlayerProfilePage;
-		original(pThis);
-	}
-}
-
-// ===================================================================
 // Public API
 // ===================================================================
 void RequestOpenCraft()
@@ -437,16 +418,6 @@ void SetupHooks()
 		if (setWaterMaskUIDAddr)
 		{
 			MH_CreateHook(setWaterMaskUIDAddr, HookSetWaterMaskUID, &originalSetWaterMaskUID);
-		}
-	}
-
-	// Set up the SetupPlayerProfilePage hook (blocks player profile page)
-	if (offsets->SetupPlayerProfilePage)
-	{
-		LPVOID setupPlayerProfilePageAddr = GetFunctionAddress(offsets->SetupPlayerProfilePage);
-		if (setupPlayerProfilePageAddr)
-		{
-			MH_CreateHook(setupPlayerProfilePageAddr, HookSetupPlayerProfilePage, &originalSetupPlayerProfilePage);
 		}
 	}
 }
